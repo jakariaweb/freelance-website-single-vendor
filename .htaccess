@@ -1,0 +1,83 @@
+RewriteEngine On
+RewriteRule ^([0-9A-ZA-Z-]+)$ blog_details.php?blog_id=$1 [QSA,NC,L]
+
+<files .htaccess>
+order allow,deny
+deny from all
+</files>
+
+<files php.ini>
+order allow,deny
+deny from all
+</files>
+
+
+
+<files config.php>
+order allow,deny
+deny from all
+</files>
+
+<files ~ "^.*\.([Hh][Tt][Aa])">
+order allow,deny
+deny from all
+satisfy all
+</files>
+
+<Files ~ "\.(js|css)$">
+  order allow,deny
+  allow from all
+</Files>
+
+# protect from sql injection
+Options +FollowSymLinks
+RewriteEngine On
+RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2})
+RewriteRule ^(.*)$ index.php [F,L]
+
+# Defines 404 error pages content:
+ErrorDocument 404 /404.php
+
+# for all invalid links (non existing files):
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* - [L,R=404]
+
+Header set Cache-Control "max-age=2592000, public"
+
+
+<FilesMatch "\.(gif¦jpe?g¦png¦ico¦css¦js¦swf)$">
+Header set Cache-Control "public"
+</FilesMatch>
+
+<filesMatch ".(css|jpg|jpeg|png|gif|js|ico)$">
+Header set Cache-Control "max-age=2592000, public"
+</filesMatch>
+
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Images
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+
+  # Video
+  ExpiresByType video/mp4 "access plus 1 year"
+  ExpiresByType video/mpeg "access plus 1 year"
+
+  # CSS, JavaScript
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+
+  # Others
+  ExpiresByType application/pdf "access plus 1 month"
+  ExpiresByType application/x-shockwave-flash "access plus 1 month"
+</IfModule>
